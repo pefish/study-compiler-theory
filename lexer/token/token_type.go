@@ -3,28 +3,10 @@ package token
 type TokenType = byte
 
 const (
-	Plus  TokenType = iota // +
-	Minus                  // -
-	Star                   // *
-	Slash                  // /
-
-	GE // >=
-	GT // >
-	EQ // ==
-	LE // <=
-	LT // <
-
-	SemiColon  // ;
-	LeftParen  // (
-	RightParen // )
-
+	Null  TokenType = iota
 	Assignment // =
-
-	If
-	Else
-
-	Int
-
+	Var
+	Uint64
 	Identifier //标识符
 
 	IntLiteral    //整型字面量

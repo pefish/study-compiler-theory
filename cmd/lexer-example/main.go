@@ -8,6 +8,9 @@ import (
 func main() {
 	script := `var a uint64 = 23`
 	myLexer := lexer.NewLexer()
-	tokens := myLexer.Tokenize(script)
-	fmt.Println(tokens)
+	err := myLexer.Tokenize(script)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(myLexer.Tokens)
 }
