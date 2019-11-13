@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"github.com/pefish/study-compiler-theory/lexer/dfa"
 	"github.com/pefish/study-compiler-theory/lexer/token"
 	"unicode"
@@ -8,18 +9,21 @@ import (
 )
 
 type Lexer struct {
-	Tokens []token.Token // 存放解析出来的所有token
-	token  token.Token   // 当前正在解析的Token
+	Tokens []*token.Token // 存放解析出来的所有token
 }
 
 func NewLexer() *Lexer {
 	return &Lexer{
-		Tokens: []token.Token{},
-		token: token.Token{
-			Text: ``,
-			Type: token.Null,
-		},
+		Tokens: []*token.Token{},
 	}
+}
+
+func (this *Lexer) ToString() string {
+	result := ``
+	for _, token1 := range this.Tokens {
+		result += fmt.Sprintf("%d: %s\n", token1.Type, token1.Text)
+	}
+	return result
 }
 
 func isLetter(ch rune) bool {
@@ -38,13 +42,13 @@ func (this *Lexer) processToken(ch rune) dfa.DfaState {
 	} else if isDigit(ch) {
 		state = dfa.IntLiteral
 	} else {
-		state = dfa.Identifier;
+		state = dfa.Identifier
 	}
 	return state
 }
 
-// var a uint64 = 23
 func (this *Lexer) Tokenize(script string) error {
+	tempToken := &token.Token{}
 	script += " "
 	state := dfa.Identifier
 	bytes := []byte(script)
@@ -53,21 +57,25 @@ func (this *Lexer) Tokenize(script string) error {
 		state = this.processToken(ch)
 		switch state {
 		case dfa.Identifier:
-			this.token.Text += string(ch)
-			this.token.Type = token.Identifier
+			tempToken.Text += string(ch)
+			tempToken.Type = token.Identifier
 		case dfa.IntLiteral:
-			this.token.Text += string(ch)
-			this.token.Type = token.IntLiteral
+			tempToken.Text += string(ch)
+			tempToken.Type = token.IntLiteral
 		case dfa.Milestone:
-			if this.token.Text == `var` {
-				this.token.Type = token.Var
-			} else if this.token.Text == `uint64` {
-				this.token.Type = token.Uint64
-			} else if this.token.Text == `=` {
-				this.token.Type = token.Assignment
+			if tempToken.Text == `var` {
+				tempToken.Type = token.Var
+			} else if tempToken.Text == `uint64` {
+				tempToken.Type = token.Uint64
+			} else if tempToken.Text == `=` {
+				tempToken.Type = token.Assignment
+			} else if tempToken.Text == `+` {
+				tempToken.Type = token.Add
+			} else if tempToken.Text == `*` {
+				tempToken.Type = token.Multi
 			}
-			this.Tokens = append(this.Tokens, this.token)
-			this.token.Empty()
+			this.Tokens = append(this.Tokens, tempToken)
+			tempToken = token.NewToken()
 		}
 	}
 	return nil

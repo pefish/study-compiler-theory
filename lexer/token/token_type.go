@@ -3,8 +3,10 @@ package token
 type TokenType = byte
 
 const (
-	Null  TokenType = iota
-	Assignment // =
+	Null       TokenType = iota
+	Assignment           // =
+	Add                  // +
+	Multi                // *
 	Var
 	Uint64
 	Identifier //标识符
